@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Post Announcement{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Post New Announcement</h2>
+
+    {# Flash messages section #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> {# Changed 'close' class and 'data-dismiss' for Bootstrap 5 #}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 bg-danger text-white">
+            <h6 class="m-0 font-weight-bold">Create New Announcement</h6>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('post_announcement') }}">
+                <div class="form-group mb-3">
+                    <label for="title">Title</label>
+                    <input type="text" class="form-control" id="title" name="title" required
+                           placeholder="Enter announcement title">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="message">Message</label>
+                    <textarea class="form-control" id="message" name="message" rows="5" required
+                             placeholder="Enter announcement message"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-megaphone-fill"></i> Post Announcement {# Changed icon to Bootstrap Icon #}
+                </button>
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary ms-2">Cancel</a> {# Changed ml-2 to ms-2 #}
+            </form>
+            {# REMOVED THE FOLLOWING SECTION AS 'ann' IS UNDEFINED HERE #}
+            {#
+            <form action="{{ url_for('delete_announcement', announcement_id=ann.id) }}" 
+                method="POST" 
+                onsubmit="return confirm('Are you sure?');">
+                <button type="submit" class="btn btn-sm btn-danger">
+                <i class="fas fa-trash"></i> Delete
+               </button>
+            </form>
+            #}
+        </div>
+    </div>
+</div>
+{% endblock %}

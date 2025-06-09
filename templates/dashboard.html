@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <h2 class="mb-4">Welcome to the Dashboard, {{ username }}!</h2>
+    
+    <div class="row">
+        <!-- Left Column - Main Cards -->
+        <div class="col-lg-8">
+            <div class="row row-cols-1 row-cols-md-2 g-4">
+                <div class="col">
+                    <div class="card border-primary h-100">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">Meter Readings</h5>
+                            <p class="card-text flex-grow-1">Submit and view your latest meter readings.</p>
+                            <a href="{{ url_for('meter') }}" class="btn btn-primary">Go to Meter</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card border-info h-100">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">Reading History</h5>
+                            <p class="card-text flex-grow-1">Check your reading submission history.</p>
+                            <a href="{{ url_for('history') }}" class="btn btn-info text-white">View History</a>
+                        </div>
+                    </div>
+                </div>
+                {% if is_admin %}
+                <div class="col">
+                    <div class="card border-danger h-100">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">Admin Panel</h5>
+                            <p class="card-text flex-grow-1">Manage readings and schedules.</p>
+                            <a href="{{ url_for('admin_history') }}" class="btn btn-danger">Admin Tools</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right Column - Schedule & Information -->
+        <div class="col-lg-4 mt-4 mt-lg-0">
+            <!-- Reading Schedule Card -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-calendar-event me-2"></i>Reading Schedule</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <span>Next Reading Date:</span>
+                                <strong>15th Oct 2024</strong>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <span>Current Cycle:</span>
+                                <span class="badge bg-primary">Week 2/4</span>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <span>Last Submission:</span>
+                                <span>5 days ago</span>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('schedule') }}" class="btn btn-outline-success w-100 mt-3">
+                        View Full Schedule
+                    </a>
+                </div>
+            </div>
+
+            <!-- Information Board -->
+            <!--div class="card shadow-sm">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0"><i class="bi bi-megaphone me-2"></i>Notifications</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h6><i class="bi bi-droplet me-2"></i>Water Conservation Alert</h6>
+                        <small>Current restriction level: Stage 1</small>
+                    </div>
+                    <div class="alert alert-danger">
+                        <h6><i class="bi bi-exclamation-triangle me-2"></i>Scheduled Maintenance</h6>
+                        <small>Oct 10th, 2-5 AM: System upgrade</small>
+                    </div>
+                    <div class="alert alert-secondary">
+                        <h6><i class="bi bi-lightbulb me-2"></i>Pro Tip</h6>
+                        <small>Submit readings before 5PM for same-day processing</small-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

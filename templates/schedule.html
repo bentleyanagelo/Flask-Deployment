@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-primary mb-4"><i class="bi bi-calendar-event me-2"></i> Schedules</h2>
+
+    {# Flash messages section #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if is_admin %}
+    <div class="card mb-4 shadow-sm border-0 bg-light">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0"><i class="bi bi-plus-circle me-2"></i> Add New Schedule</h4>
+        </div>
+        <div class="card-body">
+            {# Form action corrected to point to create_schedule route #}
+            <form method="POST" action="{{ url_for('create_schedule') }}">
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="title" name="title" required>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="scheduled_date" class="form-label">Date and Time</label>
+                    <input type="datetime-local" class="form-control" id="scheduled_date" name="scheduled_date" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Schedule</button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="card shadow-sm border-0 bg-light">
+        <div class="card-header bg-secondary text-white">
+            <h4 class="mb-0"><i class="bi bi-list-check me-2"></i> All Schedules</h4>
+        </div>
+        <div class="card-body">
+            {% if not schedules %}
+                <div class="alert alert-info text-center py-3 mb-0">
+                    <i class="bi bi-info-circle fs-2 mb-2"></i>
+                    <p class="lead mb-0">No schedules found.</p>
+                </div>
+            {% else %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>Title</th>
+                                <th>Description</th>
+                                <th>Scheduled Date</th>
+                                <th>Created By</th>
+                                <th>Status</th>
+                                {% if is_admin %}
+                                <th>Actions</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for schedule in schedules %}
+                            <tr class="
+                                {% if schedule.is_completed %}
+                                    table-success
+                                {% elif schedule.is_past %}
+                                    table-warning
+                                {% else %}
+                                    table-light
+                                {% endif %}
+                            ">
+                                <td>{{ schedule.title }}</td>
+                                <td>{{ schedule.description or '<span class="text-muted fst-italic">No description</span>' | safe }}</td>
+                                {# Changed to 24-hour format and used the format_date filter from your app #}
+                                <td>{{ schedule.scheduled_date|format_date('%b %d, %Y %H:%M') }}</td>
+                                <td>{{ schedule.creator or '<span class="text-muted fst-italic">N/A</span>' | safe }}</td> {# Display N/A for undefined creator #}
+                                <td>
+                                    {% if schedule.is_completed %}
+                                        <span class="badge bg-success">Completed</span>
+                                    {% elif schedule.is_past %}
+                                        <span class="badge bg-warning text-dark">Missed</span>
+                                    {% else %}
+                                        <span class="badge bg-primary">Upcoming</span>
+                                    {% endif %}
+                                </td>
+                                {% if is_admin %}
+                                <td>
+                                    {# Assuming 'complete_schedule' route exists and logic to mark as completed #}
+                                    {% if not schedule.is_completed %}
+                                    <form method="POST" action="{{ url_for('complete_schedule', schedule_id=schedule.id) }}" style="display: inline;">
+                                        <button type="submit" class="btn btn-sm btn-success me-1"
+                                                onclick="return confirm('Mark this schedule as completed?');">
+                                            <i class="bi bi-check-lg"></i> Complete
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                    <form method="POST" action="{{ url_for('delete_schedule', schedule_id=schedule.id) }}" style="display: inline;">
+                                        <button type="submit" class="btn btn-sm btn-danger"
+                                                onclick="return confirm('Are you sure you want to delete this schedule?')">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

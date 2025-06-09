@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}My Schedules{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>My Schedules</h2>
+    
+    <div class="card shadow">
+        <div class="card-body">
+            {% if schedules %}
+            <div class="list-group">
+                {% for schedule in schedules %}
+                <div class="list-group-item">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ schedule.title }}</h5>
+                        <small>{{ schedule.scheduled_date }}</small>
+                    </div>
+                    <p class="mb-1">{{ schedule.description }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                No schedules assigned to you.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

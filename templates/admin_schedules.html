@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Schedules Management{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-primary mb-4">📅 Schedules</h2>
+    
+    <div class="card shadow border-0 bg-light">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Scheduled Date</th>
+                            <th>Unit</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for schedule in schedules %}
+                        <tr class="{{ 'table-light' if loop.index0 % 2 == 0 else 'table-white' }}">
+                            <td><strong>{{ schedule.title }}</strong></td>
+                            <td>{{ schedule.description|truncate(50) }}</td>
+                            <td>{{ schedule.scheduled_date|format_date('%Y-%m-%d %H:%M') }}</td>
+                            <td>{{ schedule.unit_number }}</td>
+                            <td>
+                                <form action="{{ url_for('delete_schedule', schedule_id=schedule.id) }}" 
+                                      method="POST" 
+                                      class="d-inline">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">No schedules found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

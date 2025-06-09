@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Reading History{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4 text-primary">Water Reading History</h1> {# Added text-primary for main heading #}
+
+    {# Flash messages section #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if readings %}
+        <div class="card shadow mb-4"> {# Added a card for the table to give it a nice border and shadow #}
+            <div class="card-header bg-info text-white py-3"> {# Colored header for the table #}
+                <h5 class="mb-0">
+                    <i class="bi bi-calendar-check me-2"></i> All Recorded Readings
+                </h5>
+            </div>
+            <div class="card-body p-0"> {# p-0 to remove padding, so table uses full card body width #}
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0"> {# table-hover for row highlight, mb-0 to remove bottom margin #}
+                        <thead class="table-dark"> {# Dark header for contrast #}
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Reading</th> {# Added (Units) for clarity #}
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reading in readings %}
+                            <tr>
+                                <td>{{ reading.datetime }}</td>
+                                <td><span class="text-success fw-bold">{{ reading.reading }}</span></td> {# Highlighted reading in green #}
+                                <td>{{ reading.notes or '<span class="text-muted fst-italic">No notes</span>' | safe }}</td> {# Display "No notes" subtly #}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+             <div class="card-footer text-center"> {# Added a footer for the table card #}
+                <small class="text-muted">Displaying {{ readings | length }} total readings.</small>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-warning text-center py-3"> {# Changed to alert-warning for 'no readings' message #}
+            <i class="bi bi-exclamation-triangle-fill fs-2 mb-2"></i> {# Larger warning icon #}
+            <p class="lead mb-0">No readings recorded yet.</p>
+            <p class="mb-0"><a href="{{ url_for('meter') }}" class="alert-link fw-bold">Record your first reading now</a> to start tracking your water usage!</p>
+        </div>
+    {% endif %}
+
+    <div class="text-center mt-4">
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-2"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}
