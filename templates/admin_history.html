@@ -23,13 +23,25 @@
                value="{{ selected_year or now.year }}" min="2020" max="{{ now.year }}">
     </div>
 
+    <div class="form-group mx-2">
+        <label for="unit_number">Unit:</label>
+        <input type="text" name="unit_number" id="unit_number" class="form-control ml-2"
+               value="{{ selected_unit or '' }}" placeholder="Unit number">
+    </div>
+
     <button type="submit" class="btn btn-primary ml-2">Filter</button>
     <a href="{{ url_for('admin_history') }}" class="btn btn-secondary ml-2">Clear</a>
 </form>
 
 <!-- Optional: Display current filter -->
 {% if selected_month and selected_year %}
-    <p>Showing readings for <strong>{{ selected_year }}-{{ "%02d"|format(selected_month) }}</strong></p>
+    <p>Showing readings for <strong>{{ selected_year }}-{{ "%02d"|format(selected_month) }}</strong>
+    {% if selected_unit %}
+        in unit <strong>{{ selected_unit }}</strong>
+    {% endif %}
+    </p>
+{% elif selected_unit %}
+    <p>Showing readings for unit <strong>{{ selected_unit }}</strong></p>
 {% endif %}
 
 <table class="table">

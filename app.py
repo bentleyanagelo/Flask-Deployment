@@ -1,6 +1,5 @@
-# Add to top with other imports
 import os
-from dotenv import load_dotenv  # For development only
+from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, session, flash, Response
 import psycopg2
 import psycopg2.extras
@@ -778,6 +777,7 @@ def admin_history():
 
     month = request.args.get('month', type=int)
     year = request.args.get('year', type=int)
+    unit_number = request.args.get('unit_number', type=str)  # New filter parameter
 
     try:
         query = """
@@ -800,10 +800,13 @@ def admin_history():
             where_clauses.append("mr.created_at BETWEEN %s AND %s")
             params.extend([start_date_utc, end_date_utc])
 
+        if unit_number:
+            where_clauses.append("u.unit_number = %s")
+            params.append(unit_number)
+
         if where_clauses:
             query += " WHERE " + " AND ".join(where_clauses)
 
-        # PostgreSQL supports casting with ::integer or CAST(... AS INTEGER)
         query += " ORDER BY CAST(u.unit_number AS INTEGER) ASC, mr.created_at DESC"
 
         cursor.execute(query, params)
@@ -813,13 +816,10 @@ def admin_history():
 
         for row in rows:
             reading = dict(zip(columns, row))
-            # Parse timestamp (assumes timestamptz returned as string or datetime)
             created_at_utc = reading['created_at']
-            # If returned as datetime with tzinfo, use directly. If string, parse:
             if isinstance(created_at_utc, str):
                 created_at_utc = datetime.strptime(created_at_utc, '%Y-%m-%d %H:%M:%S%z')
             elif created_at_utc.tzinfo is None:
-                # If naive datetime, assume UTC
                 created_at_utc = created_at_utc.replace(tzinfo=pytz.utc)
 
             created_at_local = created_at_utc.astimezone(local_tz)
@@ -833,12 +833,13 @@ def admin_history():
         flash(f"Error fetching history: {e}", 'danger')
     finally:
         cursor.close()
-   
+        conn.close()
 
     return render_template('admin_history.html',
                            readings=all_readings,
                            selected_month=month,
-                           selected_year=year)
+                           selected_year=year,
+                           selected_unit=unit_number)  # Pass the selected unit to template
 
 
 # --- Admin: Unit Pincode Management ---
